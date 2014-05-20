@@ -1,0 +1,5 @@
+name = GSB Trim
+description = Trims values on form validate in order to avoid whitespace front-end problems.
+package = GSB
+core = 7.x
+

@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * Implementation of hook_module_implements_alter()
+ *   - hook_form_alter should be the last one.
+ */
+function gsb_trim_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'form_alter') {
+    if (isset($implementations['gsb_trim'])) {
+      $group = $implementations['gsb_trim'];
+      unset($implementations['gsb_trim']);
+      $implementations['gsb_trim'] = $group;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function gsb_trim_form_alter(&$form, &$form_state, $form_id) {
+
+  // Ensure that there is an array here.
+  if (!isset($form['#validate'])) {
+    $form['#validate'] = array();
+  }
+  // And if someone has set it as a string, fix that issue. You'd be surprised.
+  if (!is_array($form['#validate'])) {
+    $form['#validate'] = array($form['#validate']);
+  }
+  // Now add a new function to the list, but ensure that it is called first.
+  array_unshift($form['#validate'], 'gsb_trim_form_values');
+}
+
+/**
+ * Validation callback function. Trim the values of the form.
+ */
+function gsb_trim_form_values($form, &$form_state) {
+  gsb_trim_array_values($form_state['values']);
+}
+
+/**
+ * Trim all the values of the provided array, and those in all nested arrays.
+ *
+ * @param array $array
+ *   An array of values.
+ */
+function gsb_trim_array_values(&$array) {
+  foreach ($array as &$value) {
+    if (is_string($value)) {
+      $value = preg_replace('/^\s+|\s+$/', '', $value);
+    }
+    elseif (is_array($value)) {
+      gsb_trim_array_values($value);
+    }
+  }
+}
