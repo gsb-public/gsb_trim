@@ -47,7 +47,7 @@ function gsb_trim_form_values($form, &$form_state) {
 function gsb_trim_array_values(&$array) {
   foreach ($array as &$value) {
     if (is_string($value)) {
-      $value = trim($value);
+      $value = trim($value, ' ');
     }
     elseif (is_array($value)) {
       gsb_trim_array_values($value);
